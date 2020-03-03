@@ -1,0 +1,54 @@
+version: '3'
+
+networks: # 自定义网络
+  my-network: # 网络名字
+    driver: bridge # 由网关驱动
+
+volumes: # 创建自定义卷
+  node_modules: # 卷名
+
+services:
+  nginx:
+    image: nginx:alpine # 指定服务镜像
+    container_name: docker-nginx # 容器名称
+    restart: always # 重启方式
+    volumes: # 挂载数据卷
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      # - ./nginx/cert:/etc/nginx/cret
+      - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/logs:/var/log/nginx
+    ports: # 映射端口
+      # - 80:80
+      # - 443:443
+      - 9090:80
+    networks: # 使用我们上面定义的网络
+      - my-network
+### node ##############
+
+# nodejs:
+#   build:
+#     context: ./node
+#   ports:
+#     - 127.0.0.1:7001:7001
+#   volumes:
+#     - ./node:/app/
+#     - node_modules:/app/node_modules
+#   restart: always
+#   depends_on: # 定义容器启动顺序 附带容器间的依赖关系
+#     - mysql
+#   networks: # 使用我们上面定义的网络
+#     - my-network
+
+### mysql ########################
+
+# mysql:
+#   build:
+#     context: ./mysql
+#   ports:
+#     - 127.0.0.1:3306:3306
+#   volumes:
+#     - mysql_data:/data/db
+#   restart: always
+#   networks:
+#     - my-network
