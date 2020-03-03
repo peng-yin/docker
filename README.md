@@ -68,6 +68,9 @@ docker tag
 # [镜像名称:版本] 查看镜像详细
 docker inspect
 
+# 构建镜像
+docker build
+
 ```
 
 ## 容器常用命令
@@ -80,8 +83,17 @@ docker-compose stop
 # 重启
 docker-compose restart
 
+# 删除所有nginx容器,镜像
+docker-compose down
+
 # 容器列表(所有容器) 无-a => 运行的
 docker ps -a
+
+# 验证（docker-compose.yml）文件配置，当配置正确时，不输出任何内容，当文件配置错误，输出错误信息
+docker-compose config  -q
+
+# 登录到nginx容器中
+docker-compose exec nginx bash
 
 # 以 bash 命令进入容器内
 docker exec -i containerId /bin/bash
@@ -110,6 +122,27 @@ docker commit
 # 查看容器日志
 docker logs
 ```
+
+## Docker Network—Bridge 模式
+
+```sh
+# 默认网络
+> docker network ls
+
+NETWORK ID          NAME                         DRIVER              SCOPE
+15315759c263        bridge                       bridge              local
+d72064d9febf        host                         host                local
+83ea989d3fec        none                         null
+```
+
+这 3 个网络包含在 Docker 实现中。运行一个容器时，可以使用 –network 参数指定在哪种网络模式下运行该容器。
+
+```sh
+# 创建自定义的网络
+docker network create my-net
+```
+
+使用如上命令就可以创建一个名称为 my-net ，网络驱动模式为 bridge 的自定义网络。
 
 ## 简单总结
 

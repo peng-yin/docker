@@ -1,7 +1,7 @@
 version: '3'
 
 networks: # 自定义网络
-  my-network: # 网络名字
+  webproxy: # 网络名字
     driver: bridge # 由网关驱动
 
 volumes: # 创建自定义卷
@@ -9,46 +9,72 @@ volumes: # 创建自定义卷
 
 services:
   nginx:
-    image: nginx:alpine # 指定服务镜像
-    container_name: docker-nginx # 容器名称
-    restart: always # 重启方式
-    volumes: # 挂载数据卷
+    image: nginx:alpine
+    container_name: docker-nginx
+    restart: always
+    volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/conf.d:/etc/nginx/conf.d
       # - ./nginx/cert:/etc/nginx/cret
       - ./nginx/html:/usr/share/nginx/html
       - ./nginx/logs:/var/log/nginx
-    ports: # 映射端口
+    ports:
       # - 80:80
       # - 443:443
       - 9090:80
-    networks: # 使用我们上面定义的网络
-      - my-network
-### node ##############
+    networks:
+      - webproxy
+#   depends_on:                     # 启动顺序
+#     - nodejs
 
 # nodejs:
-#   build:
+#   image: nodejs                   # 镜像名称
+#   container_name: nodejs          # 容器名称
+#   restart: always                 # 重启方式
+#   build:                          # 这里指的是Dockerfile 文件
 #     context: ./node
+#     dockerfile: Dockerfile
 #   ports:
 #     - 127.0.0.1:7001:7001
 #   volumes:
 #     - ./node:/app/
 #     - node_modules:/app/node_modules
-#   restart: always
 #   depends_on: # 定义容器启动顺序 附带容器间的依赖关系
-#     - mysql
+#     - docker-mysql
+#     - docker-redis
+#   links:                          # 容器连接
+#     - docker-mysql:docker-mysql
+#     - docker-redis:docker-redis
 #   networks: # 使用我们上面定义的网络
-#     - my-network
-
-### mysql ########################
+#     - webproxy
 
 # mysql:
-#   build:
-#     context: ./mysql
-#   ports:
-#     - 127.0.0.1:3306:3306
-#   volumes:
-#     - mysql_data:/data/db
+#   image: mysql:5.7
+#   container_name: docker-mysql
 #   restart: always
-#   networks:
-#     - my-network
+#   ports:
+#     - 3306:3306
+#   volumes:  # 挂载数据卷
+#     - ./mysql:/var/lib/mysql  # 为了数据持久化
+#   environment:
+#     - MYSQL_ROOT_PASSWORD=root
+#     - MYSQL_USER=lovelp           # 创建lovelp用户
+#     - MYSQL_PASSWORD=mm123321     # 设置lovelp用户的密码
+#     - MYSQL_DATABASE=santak       # 创建初始数据库
+#     - TZ=Asia/Shanghai            # 设置时区
+#   command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+#   networks:                       # 加入指定网络
+#     - webproxy
+
+# redis:
+#   image: redis:3                  # 指定服务镜像
+#   container_name: docker-redis    # 容器名称
+#   restart: always                 # 重启方式
+#   hostname: redis
+#   command: redis-server /usr/local/etc/redis/redis.conf --requirepass 123456  --appendonly yes
+#   volumes:                        # 挂载数据卷
+#     - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+#   ports:                          # 映射端口
+#     - "6379:6379"
+#   networks:                       # 加入指定网络
+#     - webproxy
