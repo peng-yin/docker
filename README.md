@@ -7,7 +7,7 @@ brew install docker
 
 ```
 
-**start **
+**start**
 
 ```
 docker-compose up -d
