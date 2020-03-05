@@ -13,7 +13,7 @@ brew install docker
 docker-compose up -d
 ```
 
-## :statue_of_liberty: fet
+## :statue_of_liberty: future
 
 
 - [x] 用docker完成node, mysql, nginx， redis环境搭建
