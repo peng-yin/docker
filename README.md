@@ -4,7 +4,6 @@
 
 ```
 brew install docker
-
 ```
 
 **Start run**
